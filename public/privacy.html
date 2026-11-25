@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#090B16" />
+    <title>Política de Privacidad — Dream Journey</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        background: radial-gradient(120% 80% at 50% 0%, #1a1650 0%, #090b16 60%, #06071a 100%);
+        color: #e2e8f0;
+        line-height: 1.65;
+        padding: 2rem 1rem 4rem;
+      }
+      .container {
+        max-width: 720px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        padding: 2rem 1.75rem;
+        backdrop-filter: blur(14px);
+      }
+      h1 {
+        margin-top: 0;
+        font-size: 1.75rem;
+        background: linear-gradient(to right, #ffffff, #c4b5fd, #5eead4);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      h2 {
+        margin-top: 1.75rem;
+        margin-bottom: 0.5rem;
+        font-size: 1.125rem;
+        color: #c4b5fd;
+      }
+      p,
+      li {
+        color: #cbd5e1;
+        font-size: 0.96rem;
+      }
+      ul {
+        padding-left: 1.25rem;
+      }
+      li + li {
+        margin-top: 0.45rem;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: rgba(94, 234, 212, 0.12);
+        color: #5eead4;
+        border: 1px solid rgba(94, 234, 212, 0.3);
+        margin-bottom: 0.75rem;
+      }
+      .highlight {
+        background: rgba(139, 124, 246, 0.1);
+        border: 1px solid rgba(139, 124, 246, 0.25);
+        border-radius: 16px;
+        padding: 1rem 1.15rem;
+        margin: 1rem 0;
+      }
+      a {
+        color: #5eead4;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1.75rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.12);
+        text-decoration: none;
+      }
+      .meta {
+        font-size: 0.85rem;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <span class="badge">Privacidad Local-First</span>
+      <h1>Política de Privacidad de Dream Journey</h1>
+      <p class="meta">Última actualización: noviembre de 2026 · República de Colombia</p>
+
+      <p>
+        En <strong>Dream Journey</strong> respetamos profundamente tu intimidad y el carácter personal de tu diario
+        onírico. Esta Política de Privacidad explica de forma transparente qué datos se manejan, dónde se guardan y
+        cómo funciona la inteligencia artificial dentro de la aplicación.
+      </p>
+
+      <h2>1. Responsable de la aplicación</h2>
+      <p>
+        <strong>Dream Journey</strong> es una aplicación desarrollada y administrada por
+        <strong>Erwin Salas</strong> (Colombia). Si tienes inquietudes sobre privacidad, tratamiento de datos o reportes
+        de contenido, puedes escribir al correo de contacto:
+      </p>
+      <div class="highlight">
+        Correo de contacto: <a href="mailto:contacto@dreamjourney.app">contacto@dreamjourney.app</a>
+      </div>
+
+      <h2>2. Almacenamiento 100% local en tu dispositivo</h2>
+      <p>
+        Dream Journey funciona bajo una arquitectura <strong>local-first</strong> sin cuentas de usuario ni bases de
+        datos remotas propias:
+      </p>
+      <ul>
+        <li>
+          Todos tus sueños, títulos, fechas, niveles de lucidez, etiquetas, borradores, perfil onírico opcional y
+          análisis guardados se almacenan exclusivamente en la memoria local de tu navegador/dispositivo
+          (<code>localStorage</code>).
+        </li>
+        <li>
+          <strong>No vendemos, alquilamos ni compartimos</strong> tu diario con terceros, anunciantes ni corredores de
+          datos.
+        </li>
+        <li>
+          Tienes control total en todo momento: puedes exportar tus registros en formato JSON desde la pestaña
+          <em>Perfil y respaldo</em> o eliminar cualquier sueño, tu perfil o todos los datos locales cuando lo desees.
+        </li>
+      </ul>
+
+      <h2>3. Procesamiento con Inteligencia Artificial (Google Gemini)</h2>
+      <p>
+        El análisis simbólico individual y el meta-análisis global son funciones <strong>estrictamente opcionales</strong>
+        que solo se activan cuando presionas manualmente el botón correspondiente y confirmas el envío:
+      </p>
+      <ul>
+        <li>
+          Al solicitar un análisis, el texto del sueño y los campos generales de tu perfil onírico (sin tu nombre ni
+          datos de identificación directa) se transmiten de forma cifrada mediante protocolo <strong>HTTPS</strong> a
+          nuestro servidor seguro intermediario y a la API de <strong>Google Gemini</strong> con el único propósito de
+          generar tu interpretación.
+        </li>
+        <li>
+          <strong>Cero almacenamiento externo:</strong> Ni Dream Journey ni nuestros servidores intermedios guardan copias
+          de tus sueños una vez devuelta la respuesta al dispositivo.
+        </li>
+        <li>
+          <strong>Sin entrenamiento con tus sueños:</strong> Las consultas realizadas a través de la API empresarial de
+          Google Gemini no se utilizan para entrenar modelos de inteligencia artificial públicos.
+        </li>
+        <li>
+          Cada respuesta generada por IA incluye la opción <strong>«Reportar respuesta IA»</strong> para que puedas
+          notificar interpretaciones inadecuadas o inexactas, en cumplimiento de las políticas de IA generativa de
+          Google Play.
+        </li>
+      </ul>
+
+      <h2>4. Uso del micrófono (Dictado por voz)</h2>
+      <p>
+        Si utilizas la función opcional de dictado por voz para transcribir un sueño, la aplicación solicita permiso de
+        micrófono y utiliza la tecnología nativa de reconocimiento de voz de tu navegador o sistema operativo (Web
+        Speech API). Dream Journey <strong>no graba, almacena ni envía archivos de audio</strong> a servidores propios.
+      </p>
+
+      <h2>5. Derechos del titular (Ley 1581 de 2012 - Colombia)</h2>
+      <p>
+        De acuerdo con la normativa colombiana de protección de datos personales, dado que la información reposa
+        directamente bajo tu custodia en el dispositivo, ejerces de manera inmediata tus derechos de acceso,
+        actualización, rectificación y supresión borrando tus registros dentro de la app o limpiando los datos de
+        almacenamiento de la aplicación.
+      </p>
+
+      <h2>6. Cambios a esta política</h2>
+      <p>
+        Podemos actualizar esta política ocasionalmente para reflejar mejoras técnicas o normativas. Cualquier cambio
+        relevante se reflejará en esta misma página con su fecha de actualización.
+      </p>
+
+      <a href="/" class="back-btn">← Volver a Dream Journey</a>
+    </main>
+  </body>
+</html>

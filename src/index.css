@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-night-950 font-sans text-slate-100 antialiased;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  /* Permitir seleccionar/pegar texto en campos y en el texto de los sueños */
+  input,
+  textarea,
+  .selectable {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  /* 16px evita el zoom automático de iOS al enfocar inputs */
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+  ::selection {
+    background: rgba(139, 124, 246, 0.45);
+  }
+  input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(0.8);
+  }
+  * {
+    scrollbar-width: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply border border-white/10 bg-white/[0.05] shadow-card backdrop-blur-xl;
+  }
+
+  .field {
+    @apply w-full rounded-2xl border border-white/10 bg-night-900/70 px-4 py-4 text-slate-100
+      placeholder:text-slate-500 outline-none transition
+      focus:border-dream-400/70 focus:ring-4 focus:ring-dream-500/20;
+  }
+
+  .label {
+    @apply mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-dream-300/80;
+  }
+
+  .btn {
+    @apply flex min-h-[56px] items-center justify-center gap-2 rounded-2xl px-6 text-base font-semibold
+      transition active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-gradient-to-br from-dream-500 to-nebula-400/80 text-white shadow-glow
+      hover:brightness-110;
+  }
+  .btn-ghost {
+    @apply btn border border-white/10 bg-white/[0.06] text-slate-100 hover:bg-white/10;
+  }
+  .btn-danger {
+    @apply btn border border-rose-400/30 bg-rose-500/15 text-rose-200 hover:bg-rose-500/25;
+  }
+
+  .chip {
+    @apply inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-full border border-white/10
+      bg-white/[0.05] px-4 text-sm font-medium text-slate-300 transition active:scale-95;
+  }
+  .chip-active {
+    @apply border-dream-400/60 bg-dream-500/25 text-white shadow-[0_0_18px_-4px_rgba(139,124,246,0.7)];
+  }
+}
+
+/* Cielo nocturno */
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: radial-gradient(120% 80% at 50% 0%, #1a1650 0%, #0a0c24 55%, #06071a 100%);
+}
+.sky .stars {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(1.5px 1.5px at 20px 30px, #fff, transparent),
+    radial-gradient(1px 1px at 90px 120px, #cbd5ff, transparent),
+    radial-gradient(1.5px 1.5px at 160px 60px, #fff, transparent),
+    radial-gradient(1px 1px at 210px 180px, #e9d5ff, transparent),
+    radial-gradient(1px 1px at 50px 200px, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 130px 230px, #bff, transparent);
+  background-size: 250px 250px;
+  animation: twinkle 6s ease-in-out infinite;
+}
+.sky .blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.35;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+.shimmer-bar {
+  animation: shimmer 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

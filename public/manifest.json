@@ -1,0 +1,39 @@
+{
+  "name": "Dream Journey — Diario de Sueños IA",
+  "short_name": "Dream Journey",
+  "description": "Diario de sueños privado con dictado por voz, guía de sueños lúcidos y análisis simbólico profundo con IA.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090B16",
+  "theme_color": "#090B16",
+  "lang": "es-CO",
+  "categories": ["lifestyle", "health", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
