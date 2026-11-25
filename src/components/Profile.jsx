@@ -1,15 +1,7 @@
 import { useState } from 'react'
 import { PROFILE_OPTIONS, SITUACION_MAX } from '../lib/constants.js'
 import { emptyProfile, hasProfileData } from '../lib/storage.js'
-import {
-  getAiProvider,
-  setAiProvider,
-  getAiQuota,
-  getOllamaUrl,
-  setOllamaUrl,
-  getOllamaModel,
-  setOllamaModel,
-} from '../lib/ai.js'
+import { getAiQuota } from '../lib/ai.js'
 import { LockIcon, SparklesIcon } from './icons.jsx'
 
 function ChipGroup({ legend, value, options, onChange }) {
@@ -36,14 +28,10 @@ function ChipGroup({ legend, value, options, onChange }) {
   )
 }
 
-export default function Profile({ profile, onSave, onClear, notify }) {
+export default function Profile({ profile, onSave, onClear }) {
   const [form, setForm] = useState(profile)
   const [confirmingClear, setConfirmingClear] = useState(false)
   const set = (patch) => setForm((f) => ({ ...f, ...patch }))
-
-  const [provider, setProviderState] = useState(getAiProvider)
-  const [ollamaUrl, setOllamaUrlState] = useState(getOllamaUrl)
-  const [ollamaModel, setOllamaModelState] = useState(getOllamaModel)
 
   const quota = getAiQuota()
   const usedPct = quota.isPro ? 100 : Math.min(100, Math.round((quota.used / quota.limit) * 100))
@@ -54,25 +42,9 @@ export default function Profile({ profile, onSave, onClear, notify }) {
     setConfirmingClear(false)
   }
 
-  const handleProviderSelect = (newProvider) => {
-    setProviderState(newProvider)
-    setAiProvider(newProvider)
-    notify?.(
-      newProvider === 'gemini'
-        ? 'Modo principal activado: Dream Journey AI (Servidor seguro)'
-        : 'Modo secundario activado: Ollama Local',
-    )
-  }
-
-  const handleSaveOllama = () => {
-    setOllamaUrl(ollamaUrl)
-    setOllamaModel(ollamaModel)
-    notify?.('Configuración de Ollama guardada')
-  }
-
   return (
     <div className="space-y-5">
-      {/* ---------- Sección 1: Plan Freemium y Motor de IA ---------- */}
+      {/* ---------- Sección 1: Plan Freemium y Estado de IA ---------- */}
       <section className="glass animate-rise space-y-5 rounded-3xl p-5" aria-labelledby="ai-config-title">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -113,78 +85,6 @@ export default function Profile({ profile, onSave, onClear, notify }) {
             cada día.
           </p>
         </div>
-
-        {/* Selector de Proveedor */}
-        <div className="flex rounded-2xl border border-white/10 bg-black/20 p-1">
-          <button
-            type="button"
-            onClick={() => handleProviderSelect('gemini')}
-            className={`flex-1 rounded-xl py-2.5 text-xs font-semibold transition active:scale-95 ${
-              provider === 'gemini'
-                ? 'bg-dream-500/40 text-white shadow-glow'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            Dream Journey AI (Nube)
-          </button>
-          <button
-            type="button"
-            onClick={() => handleProviderSelect('ollama')}
-            className={`flex-1 rounded-xl py-2.5 text-xs font-semibold transition active:scale-95 ${
-              provider === 'ollama'
-                ? 'bg-dream-500/40 text-white shadow-glow'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            Ollama Local (Avanzado)
-          </button>
-        </div>
-
-        {provider === 'gemini' && (
-          <p className="text-xs leading-relaxed text-slate-400">
-            Conectado automáticamente mediante servidor seguro HTTPS. No necesitas configurar claves ni cuentas
-            externas.
-          </p>
-        )}
-
-        {/* Modo Secundario: Ollama Local */}
-        {provider === 'ollama' && (
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="ollama-url-input" className="label">
-                URL de Ollama
-              </label>
-              <input
-                id="ollama-url-input"
-                type="text"
-                className="field text-sm font-mono"
-                placeholder="http://localhost:11434"
-                value={ollamaUrl}
-                onChange={(e) => setOllamaUrlState(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="ollama-model-input" className="label">
-                Modelo de Ollama
-              </label>
-              <input
-                id="ollama-model-input"
-                type="text"
-                className="field text-sm font-mono"
-                placeholder="hermes3:8b"
-                value={ollamaModel}
-                onChange={(e) => setOllamaModelState(e.target.value)}
-              />
-            </div>
-            <button
-              type="button"
-              onClick={handleSaveOllama}
-              className="btn-primary w-full !min-h-[46px] text-xs font-semibold"
-            >
-              Guardar configuración Ollama
-            </button>
-          </div>
-        )}
       </section>
 
       {/* ---------- Sección 2: Perfil Onírico y Privacidad ---------- */}

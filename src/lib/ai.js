@@ -7,14 +7,10 @@
  * - Límite freemium local: 3 análisis gratuitos de IA por día (caché inteligente de 0 ms
  *   no consume cuota). El registro de sueños y dictado por voz son 100% ilimitados.
  * - Soporte de reporte de respuestas IA para cumplimiento de Google Play.
- * - Ollama preservado como modo secundario local opcional.
  */
 import { todayISO } from './constants.js'
 import { normalizeAnalysis, normalizeMetaAnalysis, normalizeProfile } from './storage.js'
 
-export const AI_PROVIDER_STORAGE = 'dream_journey_ai_provider'
-export const OLLAMA_URL_STORAGE = 'dream_journey_ollama_url'
-export const OLLAMA_MODEL_STORAGE = 'dream_journey_ollama_model'
 export const AI_QUOTA_STORAGE = 'dreamjournal:ai_quota:v1'
 export const AI_REPORTS_STORAGE = 'dreamjournal:ai_reports:v1'
 
@@ -30,6 +26,14 @@ const SINGLE_MAX_CHARS = 6000
 function getAnalyzeEndpoint() {
   const customBase = (import.meta.env?.VITE_API_URL || '').trim().replace(/\/+$/, '')
   return customBase ? `${customBase}/api/analyze` : '/api/analyze'
+}
+
+export function getAiProvider() {
+  return 'gemini'
+}
+
+export function isAIConfigured() {
+  return true
 }
 
 /* ---------- Cuota Freemium Local (3 análisis gratis/día) ---------- */
@@ -98,76 +102,6 @@ export function reportAiResponse({ targetType = 'single', targetId = '', reason 
   }
 
   return { ok: true, entry }
-}
-
-/* ---------- Proveedor de IA (Servidor Seguro vs Ollama Local Opcional) ---------- */
-
-export function getAiProvider() {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    try {
-      const stored = localStorage.getItem(AI_PROVIDER_STORAGE)
-      if (stored === 'ollama') return 'ollama'
-    } catch {}
-  }
-  return 'gemini'
-}
-
-export function setAiProvider(provider) {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    try {
-      localStorage.setItem(AI_PROVIDER_STORAGE, provider === 'ollama' ? 'ollama' : 'gemini')
-    } catch {}
-  }
-}
-
-export function getOllamaUrl() {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    try {
-      const stored = localStorage.getItem(OLLAMA_URL_STORAGE)
-      if (stored && stored.trim()) return stored.trim().replace(/\/+$/, '')
-    } catch {}
-  }
-  return (import.meta.env?.VITE_OLLAMA_URL || 'http://localhost:11434').trim().replace(/\/+$/, '')
-}
-
-export function setOllamaUrl(url) {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    try {
-      if (url && url.trim()) {
-        localStorage.setItem(OLLAMA_URL_STORAGE, url.trim().replace(/\/+$/, ''))
-      } else {
-        localStorage.removeItem(OLLAMA_URL_STORAGE)
-      }
-    } catch {}
-  }
-}
-
-export function getOllamaModel() {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    try {
-      const stored = localStorage.getItem(OLLAMA_MODEL_STORAGE)
-      if (stored && stored.trim()) return stored.trim()
-    } catch {}
-  }
-  return (import.meta.env?.VITE_OLLAMA_MODEL || 'hermes3:8b').trim()
-}
-
-export function setOllamaModel(model) {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    try {
-      if (model && model.trim()) {
-        localStorage.setItem(OLLAMA_MODEL_STORAGE, model.trim())
-      } else {
-        localStorage.removeItem(OLLAMA_MODEL_STORAGE)
-      }
-    } catch {}
-  }
-}
-
-export function isAIConfigured() {
-  const provider = getAiProvider()
-  if (provider === 'gemini') return true
-  return Boolean(getOllamaUrl())
 }
 
 /* ---------- Caché Inteligente (0 ms de respuesta sin consumir cuota) ---------- */
@@ -244,42 +178,6 @@ async function callBackendAnalyze(payload) {
   }
 }
 
-/* ---------- Modo Secundario Opcional: Ollama Local ---------- */
-
-async function callOllamaApi(system, userText) {
-  const url = `${getOllamaUrl()}/api/chat`
-  const model = getOllamaModel()
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), 60_000)
-
-  try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: system },
-          { role: 'user', content: userText },
-        ],
-        format: 'json',
-        stream: false,
-        options: { temperature: 0.45 },
-      }),
-      signal: controller.signal,
-    })
-    clearTimeout(timer)
-
-    if (!res.ok) throw new Error(`Ollama retornó HTTP ${res.status}`)
-    const data = await res.json()
-    return JSON.parse(data.message?.content)
-  } catch (err) {
-    clearTimeout(timer)
-    if (err?.name === 'AbortError') throw new Error('Ollama tardó más de 60 segundos y se canceló.')
-    throw new Error('Error al conectar con Ollama local: ' + err.message)
-  }
-}
-
 /* ---------- API Pública ---------- */
 
 export async function analyzeSingleDream(dream, userProfile, options = {}) {
@@ -300,54 +198,33 @@ export async function analyzeSingleDream(dream, userProfile, options = {}) {
     } catch {}
   }
 
-  const provider = getAiProvider()
-
-  if (provider === 'gemini') {
-    const quota = getAiQuota()
-    if (!quota.isPro && quota.remaining <= 0) {
-      const err = new Error(
-        `Has alcanzado tu límite de ${DAILY_FREE_AI_LIMIT} análisis gratuitos con IA por hoy. Se renovarán mañana (el registro de sueños y dictado por voz siguen siendo 100% ilimitados).`,
-      )
-      err.code = 'QUOTA_EXCEEDED'
-      throw err
-    }
+  const quota = getAiQuota()
+  if (!quota.isPro && quota.remaining <= 0) {
+    const err = new Error(
+      `Has alcanzado tu límite de ${DAILY_FREE_AI_LIMIT} análisis gratuitos con IA por hoy. Se renovarán mañana (el registro de sueños y dictado por voz siguen siendo 100% ilimitados).`,
+    )
+    err.code = 'QUOTA_EXCEEDED'
+    throw err
   }
 
-  let raw
   const cleanUserProfile = normalizeProfile(userProfile)
-
-  if (provider === 'gemini') {
-    raw = await callBackendAnalyze({
-      mode: 'single',
-      dream: {
-        id: dream.id,
-        date: dream.date,
-        title: dream.title,
-        description: (dream.description || '').slice(0, SINGLE_MAX_CHARS),
-        lucidity: dream.lucidity,
-        tags: dream.tags,
-      },
-      profile: cleanUserProfile,
-    })
-  } else {
-    const system =
-      'Eres un psicólogo analítico experto en sueños. Responde ÚNICAMENTE JSON válido con: emotionalTone (string), interpretation (2 párrafos profundos separados por \\n\\n), symbols (4-6 objetos {name, meaning}), lucidTip (arreglo de 2 consejos), reflectionQuestion (string).'
-    const userPrompt = `PERFIL: ${JSON.stringify(cleanUserProfile)}\nSUEÑO: ${JSON.stringify({
-      fecha: dream.date,
-      titulo: dream.title,
-      relato: (dream.description || '').slice(0, SINGLE_MAX_CHARS),
-      lucidez: dream.lucidity,
+  const raw = await callBackendAnalyze({
+    mode: 'single',
+    dream: {
+      id: dream.id,
+      date: dream.date,
+      title: dream.title,
+      description: (dream.description || '').slice(0, SINGLE_MAX_CHARS),
+      lucidity: dream.lucidity,
       tags: dream.tags,
-    })}`
-    raw = await callOllamaApi(system, userPrompt)
-  }
+    },
+    profile: cleanUserProfile,
+  })
 
   const analysis = normalizeAnalysis({ ...raw, createdAt: Date.now() })
   if (!analysis) throw new Error('La respuesta de la IA no contiene los campos requeridos.')
 
-  if (provider === 'gemini') {
-    consumeAiQuota()
-  }
+  consumeAiQuota()
 
   try {
     localStorage.setItem(cacheKey, JSON.stringify(analysis))
@@ -384,49 +261,28 @@ export async function analyzeAllDreams(dreamsList, userProfile, options = {}) {
     } catch {}
   }
 
-  const provider = getAiProvider()
-
-  if (provider === 'gemini') {
-    const quota = getAiQuota()
-    if (!quota.isPro && quota.remaining <= 0) {
-      const err = new Error(
-        `Has alcanzado tu límite de ${DAILY_FREE_AI_LIMIT} análisis gratuitos con IA por hoy. Se renovarán mañana.`,
-      )
-      err.code = 'QUOTA_EXCEEDED'
-      throw err
-    }
+  const quota = getAiQuota()
+  if (!quota.isPro && quota.remaining <= 0) {
+    const err = new Error(
+      `Has alcanzado tu límite de ${DAILY_FREE_AI_LIMIT} análisis gratuitos con IA por hoy. Se renovarán mañana.`,
+    )
+    err.code = 'QUOTA_EXCEEDED'
+    throw err
   }
 
-  let raw
   const cleanUserProfile = normalizeProfile(userProfile)
-
-  if (provider === 'gemini') {
-    raw = await callBackendAnalyze({
-      mode: 'meta',
-      dreams: recent.map((d) => ({
-        date: d.date,
-        title: d.title,
-        description: (d.description || '').slice(0, 800),
-        lucidity: d.lucidity,
-        tags: d.tags,
-        aiAnalysis: d.aiAnalysis,
-      })),
-      profile: cleanUserProfile,
-    })
-  } else {
-    const system =
-      'Eres un analista de patrones oníricos. Responde ÚNICAMENTE JSON válido con: patterns (array), dreamSigns (array), emotionalEvolution (string), recommendations (array).'
-    const userPrompt = `PERFIL: ${JSON.stringify(cleanUserProfile)}\nSUEÑOS: ${JSON.stringify(
-      recent.map((d) => ({
-        fecha: d.date,
-        titulo: d.title,
-        lucidez: d.lucidity,
-        tags: d.tags,
-        relato: (d.description || '').slice(0, 800),
-      })),
-    )}`
-    raw = await callOllamaApi(system, userPrompt)
-  }
+  const raw = await callBackendAnalyze({
+    mode: 'meta',
+    dreams: recent.map((d) => ({
+      date: d.date,
+      title: d.title,
+      description: (d.description || '').slice(0, 800),
+      lucidity: d.lucidity,
+      tags: d.tags,
+      aiAnalysis: d.aiAnalysis,
+    })),
+    profile: cleanUserProfile,
+  })
 
   const report = normalizeMetaAnalysis({
     ...raw,
@@ -435,9 +291,7 @@ export async function analyzeAllDreams(dreamsList, userProfile, options = {}) {
   })
   if (!report) throw new Error('El reporte generado no contiene los campos requeridos.')
 
-  if (provider === 'gemini') {
-    consumeAiQuota()
-  }
+  consumeAiQuota()
 
   try {
     localStorage.setItem(cacheKey, JSON.stringify(report))
