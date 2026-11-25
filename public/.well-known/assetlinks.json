@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.erwinsalas.dreamjourney",
+      "sha256_cert_fingerprints": [
+        "16:3C:29:C1:5A:14:99:F0:57:E4:5B:BC:59:11:86:08:D3:2A:6B:B5:0A:2B:DC:D4:08:68:27:11:8E:D3:EA:96"
+      ]
+    }
+  }
+]
